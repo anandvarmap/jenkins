@@ -1,0 +1,37 @@
+#########   This playbook installs Jenkins on a RHEL/CentOS machine ########
+---
+- name: Installing wget and jdk 1.8
+  yum: 
+    name: {{ item }}
+    state: present
+  with_items:
+      - wget
+      - java-1.8.0-openjdk
+- name: Download jenkins repo
+  yum_repository:
+    name: jenkins
+    state: present
+    description: Official Jenkins Yum Repo
+    baseurl: http://pkg.jenkins.io/redhat
+    gpgkey: https://jenkins-ci.org/redhat/jenkins-ci.org.key
+    gpgcheck: yes
+    enabled: yes
+- name: Install Jenkins
+  yum:
+    name: jenkins
+    state: present
+- name: Start Jenkins
+  service:
+    name: jenkins
+    state: started
+    enabled: true
+- name: wait for the services to start
+  wait_for: timeout=60
+- name: Open ports for the access
+  firewalld:
+    zone: public
+    port: 8080/tcp
+    permanent: true
+    state: enabled
+
+
