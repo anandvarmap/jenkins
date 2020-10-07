@@ -33,5 +33,10 @@
     port: 8080/tcp
     permanent: true
     state: enabled
-
-
+- name: Show the initial password
+  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+  changed_when: false
+  register: initial_password
+- name: Display the password
+  debug:
+    var: initial_password.stdout
